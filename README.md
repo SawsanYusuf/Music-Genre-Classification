@@ -337,11 +337,133 @@ lr = LogisticRegression(random_state=42, max_iter=2000)
 lr.fit(X_train, y_train)
 lrPreds = lr.predict(X_test)
 make_classification_
+
+plots(lrPreds, 'Logistic Regression')
+test_performance(lr, X_test, y_test)
 ```
 
+### Ensemble and Boostings Models
 
+This subsection explores ensemble learning methods:
 
+* Random Forest Classifier
+* Balanced Random Forest Classifier
+* Gradient Boosting Classifier
+* HistGradientBoostingClassifier
+* XGBoost Classifier
+* LightGBM Classifier
+* CatBoost Classifier
 
+Each model is trained and evaluated similarly to the traditional models.
+
+For example, for Random Forest Classifier:
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+
+rf = RandomForestClassifier(random_state=42)
+rf.fit(X_train, y_train)
+rfPreds = rf.predict(X_test)
+make_classification_plots(rfPreds, 'Random Forest')
+test_performance(rf, X_test, y_test)
+```
+
+### Fine-Tuning Best Models
+
+This subsection aims to improve the performance of some of the top-performing models by searching for the optimal combination of their hyperparameters.
+
+#### Logistic Regression
+
+Hyperparameter tuning for Logistic Regression using `GridSearchCV`:
+
+```python
+from sklearn.model_selection import GridSearchCV, StratifiedKFold
+
+param_grid_lr = {'C': np.logspace(-4, 4, 20),
+                   'solver': ['liblinear', 'newton-cg', 'lbfgs', 'sag', 'saga']}
+
+grid_search_lr = GridSearchCV(LogisticRegression(random_state=42, max_iter=500),
+                               param_grid_lr,
+                               scoring='balanced_accuracy',
+                               cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=42),
+                               n_jobs=-1)
+grid_search_lr.fit(X_train, y_train)
+print("Best parameters for Logistic Regression:", grid_search_lr.best_params_)
+print("Best balanced accuracy for Logistic Regression:", grid_search_lr.best_score_)
+```
+
+#### CatBoost Modeling
+
+Hyperparameter tuning for CatBoost using `GridSearchCV`:
+
+```python
+from catboost import CatBoostClassifier
+
+parameters_cat = {'iterations': [500, 1000, 1500],
+                  'learning_rate': [0.01, 0.05, 0.1],
+                  'depth': [4, 6, 8],
+                  'l2_leaf_reg': [1, 3, 5]}
+
+cat_classifier = CatBoostClassifier(random_state=42, verbose=0)
+
+cat_grid_search = GridSearchCV(estimator=cat_classifier,
+                               param_grid=parameters_cat,
+                               scoring='balanced_accuracy',
+                               cv=StratifiedKFold(n_splits=5, shuffle=True, random_state=42),
+                               n_jobs=-1)
+
+cat_grid_search.fit(X_train, y_train)
+print("CatBoost Best Parameters:", cat_grid_search.best_params_)
+print("CatBoost Best Score:", cat_grid_search.best_score_)
+```
+
+#### Stacking Classifier
+
+Combining multiple models using a Stacking Classifier:
+
+```python
+from sklearn.ensemble import StackingClassifier
+
+estimators = [
+    ('lr', LogisticRegression(random_state=42, solver='newton-cg', C=10.0, max_iter=500)),
+    ('mlp', MLPClassifier(random_state=42, hidden_layer_sizes=(512,), max_iter=100, early_stopping=True, solver='adam', learning_rate='adaptive')),
+    ('gb', GradientBoostingClassifier(random_state=42, learning_rate=0.1, max_depth=5, n_estimators=100)),
+    ('lgbm', LGBMClassifier(random_state=42, learning_rate=0.1, n_estimators=200, num_leaves=31)),
+    ('cat', CatBoostClassifier(random_state=42, iterations=1000, learning_rate=0.05, depth=6, l2_leaf_reg=3, verbose=0))
+]
+
+stack_model = StackingClassifier(estimators=estimators, final_estimator=LogisticRegression(random_state=42, solver='liblinear'))
+stack_model.fit(X_train, y_train)
+stackPreds = stack_model.predict(X_test)
+make_classification_plots(stackPreds, 'StackingClassifier')
+test_performance(stack_model, X_test, y_test)
+```
+
+## Making Submission
+
+This section outlines the steps taken to prepare the predictions for submission.
+
+The notebook focuses on using the best-performing model (CatBoost Classifier) after hyperparameter tuning.
+
+The CatBoost Classifier is trained on the entire training dataset using the best hyperparameters:
+
+```python
+best_cat_params = {'depth': 6, 'iterations': 1000, 'l2_leaf_reg': 3, 'learning_rate': 0.05}
+final_cat_model = CatBoostClassifier(random_state=42, **best_cat_params, verbose=1)
+final_cat_model.fit(X_train, y_train)
+```
+
+Predictions are made on the test dataset:
+
+```python
+catPreds_final = final_cat_model.predict(X_test)
+```
+
+The predictions are then formatted into a submission file.
+
+## Conclusion
+
+This notebook provides a comprehensive workflow for music genre classification, covering data loading, preprocessing, model training, hyperparameter tuning, and submission preparation. The project explores various machine learning models, including traditional classifiers and ensemble methods, and demonstrates techniques for optimizing model performance.
 
 
 
