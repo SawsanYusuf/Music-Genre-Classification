@@ -1,6 +1,30 @@
 # Music Genre Classification
 ![](https://github.com/SawsanYusuf/Music-Genre-Classification/blob/main/images/marius-masalar-rPOmLGwai2w-unsplash.jpg)
 
+## Table of Contents
+
+1.  [Overview](#overview)
+2.  [Reading Data](#reading-data)
+3.  [Data Preparation](#data-preparation)
+    * [Cleaning Data](#cleaning-data)
+    * [Missing Values](#missing-values)
+    * [Making New Features](#making-new-features)
+4.  [Data Preprocessing (Continued)](#data-preprocessing-continued)
+    * [Removing Outliers](#removing-outliers)
+    * [Applying Log Transformation](#applying-log-transformation)
+    * [Polynomial Features](#polynomial-features)
+    * [Scaling Features](#scaling-features)
+    * [Making Preprocessing Pipeline](#making-preprocessing-pipeline)
+5.  [Machine Learning Models](#machine-learning-models)
+    * [Traditional Models](#traditional-models)
+    * [Ensemble and Boostings Models](#ensemble-and-boostings-models)
+    * [Fine-Tuning Best Models](#fine-tuning-best-models)
+        * [Logistic Regression](#logistic-regression)
+        * [CatBoost Modeling](#catboost-modeling)
+        * [Stacking Classifier](#stacking-classifier)
+6.  [Making Submission](#making-submission)
+7.  [Conclusion](#conclusion)
+
 ## Overview
 
 This project focuses on music genre classification using machine learning techniques. The dataset comprises nearly 14,000 tracks, spanning a diverse range of musical genres. The goal is to train a model ensemble capable of accurately classifying each track into its respective genre, from Pop to Jazz, Rock to Classical, and others. This project explores the application of data science to the analysis and categorization of music, leveraging the patterns and features within audio data to understand and classify the rich tapestry of musical expression.
